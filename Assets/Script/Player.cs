@@ -45,6 +45,13 @@ public class Player : MonoBehaviour
         input.PlayerAction.EatSplit.started += context => Eat();
         // Reset level
         input.PlayerAction.Reset.started += context => Reset();
+        input.PlayerAction.Quit.started += context => Quit();
+    }
+
+    private void Quit()
+    {
+        Debug.Log("Quit");
+        Application.Quit();
     }
     private void Start()
     {
@@ -180,10 +187,7 @@ public class Player : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             else
             {
-                Debug.Log("END!");
-
-                Application.Quit();
-
+                Quit();
             }
         }
     }

@@ -176,6 +176,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""a4f11b2c-92cd-4d59-8455-6f3fb7cdd566"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -200,6 +209,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c7a4606d-5bf6-4c50-a857-b81ea1ad1965"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -216,6 +236,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_PlayerAction = asset.FindActionMap("PlayerAction", throwIfNotFound: true);
         m_PlayerAction_EatSplit = m_PlayerAction.FindAction("Eat/Split", throwIfNotFound: true);
         m_PlayerAction_Reset = m_PlayerAction.FindAction("Reset", throwIfNotFound: true);
+        m_PlayerAction_Quit = m_PlayerAction.FindAction("Quit", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -349,12 +370,14 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private List<IPlayerActionActions> m_PlayerActionActionsCallbackInterfaces = new List<IPlayerActionActions>();
     private readonly InputAction m_PlayerAction_EatSplit;
     private readonly InputAction m_PlayerAction_Reset;
+    private readonly InputAction m_PlayerAction_Quit;
     public struct PlayerActionActions
     {
         private @Controls m_Wrapper;
         public PlayerActionActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @EatSplit => m_Wrapper.m_PlayerAction_EatSplit;
         public InputAction @Reset => m_Wrapper.m_PlayerAction_Reset;
+        public InputAction @Quit => m_Wrapper.m_PlayerAction_Quit;
         public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -370,6 +393,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Reset.started += instance.OnReset;
             @Reset.performed += instance.OnReset;
             @Reset.canceled += instance.OnReset;
+            @Quit.started += instance.OnQuit;
+            @Quit.performed += instance.OnQuit;
+            @Quit.canceled += instance.OnQuit;
         }
 
         private void UnregisterCallbacks(IPlayerActionActions instance)
@@ -380,6 +406,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Reset.started -= instance.OnReset;
             @Reset.performed -= instance.OnReset;
             @Reset.canceled -= instance.OnReset;
+            @Quit.started -= instance.OnQuit;
+            @Quit.performed -= instance.OnQuit;
+            @Quit.canceled -= instance.OnQuit;
         }
 
         public void RemoveCallbacks(IPlayerActionActions instance)
@@ -408,5 +437,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     {
         void OnEatSplit(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
+        void OnQuit(InputAction.CallbackContext context);
     }
 }
