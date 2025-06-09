@@ -30,7 +30,9 @@ public class Player : MonoBehaviour
 
     // leggi sotto vv
     Vector3 startPos;
-    
+
+    [SerializeField]
+    Hints hintManager;
 
     private void Awake()
     {
@@ -210,6 +212,8 @@ public class Player : MonoBehaviour
                 gameManager.Check();
 
                 form.localScale = skinny;
+                if (hintManager)
+                    hintManager.EatHint();
             }
             else if (canMove && !findObstacle)
             {
@@ -220,6 +224,8 @@ public class Player : MonoBehaviour
                 gameManager.Check();
                 // non necessario
                 form.localScale = skinny;
+                if (hintManager)
+                    hintManager.EatHint();
             }
         }
         else if (hit.collider != null && objEat == null) // Eat
@@ -244,6 +250,8 @@ public class Player : MonoBehaviour
                     gameManager.Check();
 
                     form.localScale = fat;
+                    if (hintManager)
+                        hintManager.SplitHint();
                 }
             }
         }
