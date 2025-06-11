@@ -46,9 +46,7 @@ public class FirstScreen : MonoBehaviour
                 hint.gameObject.SetActive(false);
                 blinkHint = false;
 
-                // load main menu
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-                Debug.Log("load main menu");
             }
         }
     }
