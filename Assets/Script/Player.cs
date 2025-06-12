@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 // using static UnityEditor.Timeline.TimelinePlaybackControls;
@@ -9,6 +10,7 @@ public class Player : MonoBehaviour
 {
     // Singelton
     GameManager gameManager;
+    SaveSystem saveSystem;
     // Input Map
     Controls input;
     // Obstacle & Movement
@@ -30,6 +32,12 @@ public class Player : MonoBehaviour
 
     // leggi sotto vv
     Vector3 startPos;
+
+    // Add vv
+    Int32 restart = 0;
+    Int32 currentLv = 1;
+    Int32 world;
+
 
     private void Awake()
     {
@@ -56,6 +64,7 @@ public class Player : MonoBehaviour
     {
         // Singelton
         gameManager = GameManager.Instance;
+        saveSystem = SaveSystem.Instance;
         // Win condition
         winPos = gameManager.GetWinColumns().gameObject;
         // Limit
@@ -88,9 +97,17 @@ public class Player : MonoBehaviour
         // dovrei alzare la sua posizione per controllare se sono in quel preciso caso
     }
 
-    private void Reset()
+    // Mod the restart input to change the gameplay
+        // le's try to implement the game over
+    private void Reset() 
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        restart++;
+        if(restart > 10)
+        {
+            SceneManager.LoadScene(1); // 1 = main menu con la selezione di questo mondo (?)
+        }
+        else
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     #region Movement & check Next Position
     void MoveUp()
@@ -181,13 +198,28 @@ public class Player : MonoBehaviour
             /*if (SceneManager.GetActiveScene().buildIndex == 10)
                 Application.Quit();
             else*/
-
-            if (SceneManager.GetActiveScene().buildIndex != 40)
+            currentLv++;
+            if(currentLv >= 10)
+            {
+                world++;
+                // qui salva
+                SceneManager.LoadScene(1); // mani menu
+            }
+            else
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
+            /*
+            if (SceneManager.GetActiveScene().buildIndex != 40) // numero da settare?
+            {
+                // controlla il mondo in cui ti trovi e nel caso sei a 10 allora vai alla home
+                    // in alternativa questo vv
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            }
             else
             {
-                Quit();
-            }
+                Debug.Log("YOU SUPER WIN!");
+                Quit(); // alla vittoria qui si chiude l'applicazione
+            }*/
         }
     }
     #endregion

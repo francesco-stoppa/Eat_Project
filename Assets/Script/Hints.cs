@@ -2,20 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
 
 public class Hints : MonoBehaviour
-{/*
-    [SerializeField]
-    Image eatImage;
-    [SerializeField]
-    Image splitImage;*/
-
+{
     Controls input;
     RectTransform rectTransform;
 
+    [SerializeField]
+    Button commandIcon;
+
+    [SerializeField]
+    float animationVelocity;
+    float initialPositionX;
+    [SerializeField]
+    float finallPositionX = 199.0f;
+    bool startAnimation = false;
 
     private void Awake()
     {
@@ -23,30 +28,51 @@ public class Hints : MonoBehaviour
         input = new Controls();
         input.PlayerAction.Quit.started += context => OpenHints();
         rectTransform = this.GetComponent<RectTransform>();
+        initialPositionX = rectTransform.anchoredPosition.x;
     }
     public void OpenHints()
     {
         if (rectTransform != null)
         {
-            rectTransform.anchoredPosition = new Vector3(199, 48, 200);
+            if (startAnimation)
+            {
+                animationVelocity = -animationVelocity;
+            }
+            else
+            {
+                startAnimation = true;
+                if (commandIcon)
+                    commandIcon.gameObject.SetActive(false);
+            }
         }
     }
-    /*
-    public void SplitHint()
-    {
-        if(eatImage)
-            eatImage.gameObject.SetActive(true);
-        if (splitImage)
-            splitImage.gameObject.SetActive(false);
 
-    }
-    public void EatHint()
+    void Update()
     {
-        if (splitImage)
-            splitImage.gameObject.SetActive(true);
-        if (eatImage)
-            eatImage.gameObject.SetActive(false);
-    }*/
+        if(startAnimation)
+        {
+            rectTransform.anchoredPosition += Vector2.left * animationVelocity;
+        }
+
+        if (rectTransform.anchoredPosition.x <= finallPositionX && animationVelocity > 0)
+        {
+            EndAnimation();
+        }
+
+        if (rectTransform.anchoredPosition.x >= initialPositionX && animationVelocity < 0)
+        {
+            EndAnimation();
+        }
+    }
+
+    void EndAnimation()
+    {
+        startAnimation = false;
+        animationVelocity = -animationVelocity;
+        if(commandIcon)
+            commandIcon.gameObject.SetActive(true); 
+    }
+
    #region InputMap
     private void OnEnable()
     {
