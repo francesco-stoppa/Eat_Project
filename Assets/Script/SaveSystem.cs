@@ -11,6 +11,7 @@ public class SaveSystem : MonoBehaviour
     private const string PREF_WORLD = "worldUnlock";
     Int32 worldUnlock;
     Int32 restartInteraction;
+    Int32 currentLevel = 1;
 
     void Awake()
     {
@@ -30,14 +31,21 @@ public class SaveSystem : MonoBehaviour
         worldUnlock = PlayerPrefs.GetInt(PREF_WORLD, 0);
         if (worldUnlock == 0)
         {
-            PlayerPrefs.SetInt(PREF_WORLD, 1);
-            worldUnlock = 1;
+            PlayerPrefs.SetInt(PREF_WORLD, 0);
+            worldUnlock = 0;
         }
+        DontDestroyOnLoad(this.gameObject);
     }
 
-    public void LvComplete()
+    public void LvComplete(Int32 newWorld)
     {
-        worldUnlock++;
+        worldUnlock = newWorld;
         PlayerPrefs.SetInt(PREF_WORLD, worldUnlock);
     }
+    public int GetWorld()
+    { return worldUnlock; }
+    public int GetLevel()
+    { return currentLevel; }
+    public void SetLevel(int level)
+    { currentLevel = level; }
 }

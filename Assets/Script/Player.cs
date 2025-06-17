@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
 
     // Add vv
     Int32 restart = 0;
-    Int32 currentLv = 1;
+    Int32 currentLv = 0;
     Int32 world;
 
 
@@ -65,6 +65,8 @@ public class Player : MonoBehaviour
         // Singelton
         gameManager = GameManager.Instance;
         saveSystem = SaveSystem.Instance;
+        world = saveSystem.GetWorld();
+        currentLv = saveSystem.GetLevel();
         // Win condition
         winPos = gameManager.GetWinColumns().gameObject;
         // Limit
@@ -100,13 +102,13 @@ public class Player : MonoBehaviour
     // Mod the restart input to change the gameplay
         // le's try to implement the game over
     private void Reset() 
-    {
+    {/*
         restart++;
         if(restart > 10)
         {
             SceneManager.LoadScene(1); // 1 = main menu con la selezione di questo mondo (?)
         }
-        else
+        else*/
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     #region Movement & check Next Position
@@ -199,10 +201,15 @@ public class Player : MonoBehaviour
                 Application.Quit();
             else*/
             currentLv++;
+            saveSystem.SetLevel(currentLv);
+            Debug.Log($"Current world: {world} - Current level: {currentLv}");
+
             if(currentLv >= 10)
             {
                 world++;
                 // qui salva
+                saveSystem.LvComplete(world);
+                saveSystem.SetLevel(1);
                 SceneManager.LoadScene(1); // mani menu
             }
             else
