@@ -7,6 +7,8 @@ TagManager:
   - CantDestroy
   - Invisible
   - Stair
+  - Inedible
+  - Tunnel
   layers:
   - Default
   - TransparentFX
