@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Pawn : MonoBehaviour
@@ -11,13 +9,17 @@ public class Pawn : MonoBehaviour
     [Tooltip("This variable determines the distance between \nthe center of one box and another.")]
     [SerializeField] float distanceCheck;
 
+
+    #region Base System
     void Start()
     {
         BindEvents();
-        if (distanceCheck > 0) return;
-        
-        Debug.LogWarning($"The [Distance Check] value is 0 (or less)." + 
-            $"\nCurrent value: <{distanceCheck}>.");
+
+        if (distanceCheck < 0)
+            Debug.LogWarning($"The [Distance Check] value is 0 (or less)." +
+                $"\nCurrent value: <{distanceCheck}>.");
+
+        SetpOnNewTile();
     }
 
     Box SomethingAhead()
@@ -28,7 +30,9 @@ public class Pawn : MonoBehaviour
         if (!hit.collider.gameObject.TryGetComponent<Box>(out Box objectAhead)) return null;
         return objectAhead;
     }
+    #endregion
 
+    #region Movement System
     void Move(E_Direction direction)
     {
         if (direction == E_Direction.None) return;
@@ -50,29 +54,39 @@ public class Pawn : MonoBehaviour
                 break;
         }
 
+        bool stepIntoPortal = false;
+
         // check if there is a  object ahead
         Box objectAhead = SomethingAhead();
         // check if it can pass through
         if (objectAhead != null)
-            if (!objectAhead.CanPassThrough(this)) return;
+            stepIntoPortal = objectAhead.CanPassThrough(this);
 
-        // se sono su una piattaforma
-        if (CheckIfWillFallAfterStepOut()) return;
+        // check nex tile only if you ar not enter into a portal
+        if (!stepIntoPortal && CheckIfWillFallAfterStepOut()) return;
 
-        // Move
-        transform.position += transform.forward;
-
-        if(currentTile == null)
+        // if can not step out you will get an error
+        if (currentTile == null)
         {
             Debug.LogError("The [Pawn] sand on nothing.");
             return;
         }
         currentTile.SetpOut(this);
 
+        if (stepIntoPortal) // teleport the pawn
+            objectAhead.SetNewTransformToThePawn(this);
+        else // Move
+            transform.position += transform.forward;
 
+        SetpOnNewTile();
+    }
+
+    void SetpOnNewTile()
+    {
         RaycastHit hit;
+        Vector3 origin = transform.position;
 
-        if (!Physics.Raycast(transform.position, -transform.up, out hit, distanceCheck))
+        if (!Physics.Raycast(origin, -transform.up, out hit, distanceCheck))
         {
             Debug.LogError("The [Pawn] sand on nothing.");
             return;
@@ -82,10 +96,13 @@ public class Pawn : MonoBehaviour
             Debug.LogError("The [Pawn] sand on nothing.");
             return;
         }
+        
         standBox.SetpOn(this);
         currentTile = standBox;
+
+        transform.position = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
     }
-    bool CheckIfWillFallAfterStepOut()
+    bool CheckIfWillFallAfterStepOut() // << TO DEBUG
     {
         RaycastHit hit;
         Vector3 origin = transform.position - transform.up;
@@ -95,10 +112,10 @@ public class Pawn : MonoBehaviour
 
         // check if the Box hit can be walkable
         if (!hit.collider.gameObject.TryGetComponent<Box>(out Box objectAhead)) return false;
+
         return objectAhead.walkable;
     }
-
-
+    #endregion
 
     #region Stomach System
     void SplitAndEat(E_Commands commandRecive)

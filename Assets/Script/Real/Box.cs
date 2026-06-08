@@ -7,17 +7,34 @@ public class Box : MonoBehaviour
     [Tooltip("Bob ca walk on this object?")]
     public bool walkable = true;
     [Tooltip("Bob ca eat this object?")]
-    public bool eatable = true; 
+    public bool eatable = true;
 
+
+    #region Base System
     void Awake()
     {
         if (weight == E_ObjectWeight.none)
             Debug.LogError($"The obstacle: <{gameObject.name}> does not has a [weight].");
+
+        transform.position = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z); 
     }
 
-    #region Eat System
+    bool PawnCheck(Pawn pawn)
+    {
+        if (pawn == null)
+        {
+            Debug.LogError("[Pawn] not detected.");
+            return false;
+        }
+        return true;
+    }
+    #endregion
+
+    #region Eat & Split System
     public virtual void Eat(Pawn pawn)
     {
+        if (!PawnCheck(pawn)) return;
+
         if (!eatable) return; // << Temp
 
         this.gameObject.SetActive(false);
@@ -37,21 +54,31 @@ public class Box : MonoBehaviour
 
     public virtual void Split(Vector3 newPosition)
     {
-        this.gameObject.transform.position = newPosition;
+        gameObject.transform.position = newPosition;
         FreeFall();
-        this.gameObject.SetActive(true);
+        gameObject.SetActive(true);
     }
     #endregion
 
     #region Walkable System
     public virtual void SetpOn(Pawn pawn)
     {
-        // ...
+        if (!PawnCheck(pawn)) return;
     }
 
     public virtual void SetpOut(Pawn pawn)
     {
-        // ...
+        if (!PawnCheck(pawn)) return;
+    }
+
+    public virtual bool CanPassThrough(Pawn pawn)
+    {
+        return false;
+    }
+
+    public virtual void SetNewTransformToThePawn(Pawn pawn)
+    {
+        if (!PawnCheck(pawn)) return;
     }
     #endregion
 
@@ -86,11 +113,6 @@ public class Box : MonoBehaviour
 
         if (!objectHit.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
         obstacle.SetpOn();
-    }
-
-    public virtual bool CanPassThrough(Pawn pawn)
-    {
-        return false;
     }
     #endregion
 }
