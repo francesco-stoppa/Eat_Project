@@ -10,7 +10,7 @@ public class PressureTile : Obstacle
         RaycastHit hit;
         if (!Physics.Raycast(transform.position, transform.up, out hit, 1f)) return;
         if (!hit.collider.gameObject.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
-        if (obstacle.weight == E_ObjectWeight.levitate) return;
+        if (obstacle.weight == E_ObjectWeight.Levitate) return;
         SetpOn(null);
     }
 

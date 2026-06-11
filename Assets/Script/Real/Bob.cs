@@ -14,7 +14,7 @@ public class Bob : MonoBehaviour
     public bool Fat()
     {
         if (goEat == null) return false;
-        if (goEat.weight == E_ObjectWeight.small)
+        if (goEat.weight == E_ObjectWeight.Small)
             return false;
 
         return true;
@@ -86,7 +86,7 @@ public class Bob : MonoBehaviour
     #region Events
     void Move(E_Direction direction)
     {
-        if (direction == E_Direction.None) return;
+        if (direction == E_Direction.Not_Set) return;
 
         // Rotate
         switch (direction)
@@ -97,10 +97,10 @@ public class Bob : MonoBehaviour
             case E_Direction.Right:
                 transform.rotation = Quaternion.Euler(0, 90, 0);
                 break;
-            case E_Direction.Up:
+            case E_Direction.Forward:
                 transform.rotation = Quaternion.Euler(0, 0, 0);
                 break;
-            case E_Direction.Down:
+            case E_Direction.Back:
                 transform.rotation = Quaternion.Euler(0, 180, 0);
                 break;
         }

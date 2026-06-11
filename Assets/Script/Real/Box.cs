@@ -1,25 +1,36 @@
+using System;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class Box : MonoBehaviour
 {
     [Tooltip("Small object dont make you fat")]
     public E_ObjectWeight weight;
-    [Tooltip("Bob ca walk on this object?")]
+    [Tooltip("The Pawn can walk on this object?")]
     public bool walkable = true;
-    [Tooltip("Bob ca eat this object?")]
+    [Tooltip("The Pawn can eat this object?")]
     public bool eatable = true;
 
+    public Func<Pawn, bool> OnSetpOutTeleportationOverride;
 
-    #region Base System
     void Awake()
     {
-        if (weight == E_ObjectWeight.none)
-            Debug.LogError($"The obstacle: <{gameObject.name}> does not has a [weight].");
-
-        transform.position = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z); 
+        Repositioning();
+        BaseChecks();
     }
 
-    bool PawnCheck(Pawn pawn)
+    #region Base System
+    protected void Repositioning()
+    {
+        transform.position = Vector3Int.RoundToInt(transform.position);
+    }
+    protected virtual void BaseChecks()
+    {
+        if (weight == E_ObjectWeight.Not_Set)
+            Debug.LogError($"The object: <{gameObject.name}> does not has a [weight].");
+    }
+
+    protected bool PawnCheck(Pawn pawn)
     {
         if (pawn == null)
         {
@@ -40,7 +51,7 @@ public class Box : MonoBehaviour
         this.gameObject.SetActive(false);
 
 
-        if (weight == E_ObjectWeight.levitate) return;
+        if (weight == E_ObjectWeight.Levitate) return;
 
         RaycastHit hit;
         Vector3 origin = transform.position;
@@ -56,6 +67,7 @@ public class Box : MonoBehaviour
     {
         gameObject.transform.position = newPosition;
         FreeFall();
+        Repositioning();
         gameObject.SetActive(true);
     }
     #endregion
@@ -70,16 +82,34 @@ public class Box : MonoBehaviour
     {
         if (!PawnCheck(pawn)) return;
     }
+    #endregion
 
-    public virtual bool CanPassThrough(Pawn pawn)
+    #region Teleport System
+    public virtual bool HasPassThroughTeleportation(Pawn pawn)
     {
-        return false;
-    }
+        PawnCheck(pawn);
 
-    public virtual void SetNewTransformToThePawn(Pawn pawn)
+        return true;
+        // ^^ Need to be <true> for the Cave script 
+    }/*
+    public virtual void PassThroughTeleportation(Pawn pawn)
     {
         if (!PawnCheck(pawn)) return;
-    }
+    }*/
+
+    public virtual bool HasSetpOutTeleportation(Pawn pawn)
+    {
+        PawnCheck(pawn);
+
+        if (OnSetpOutTeleportationOverride != null)
+            return OnSetpOutTeleportationOverride.Invoke(pawn);
+
+        return false;
+    }/*
+    public virtual void SetpOutTeleportation(Pawn pawn)
+    {
+        if (!PawnCheck(pawn)) return;
+    }*/
     #endregion
 
     #region Physic System
@@ -88,7 +118,7 @@ public class Box : MonoBehaviour
     private void Update()
     {
         if (gameObject.transform.position.y == 0
-            || weight == E_ObjectWeight.levitate) return;
+            || weight == E_ObjectWeight.Levitate) return;
 
         FreeFall();
     }
@@ -96,7 +126,7 @@ public class Box : MonoBehaviour
 
     void FreeFall()
     {
-        if (weight == E_ObjectWeight.levitate) return;
+        if (weight == E_ObjectWeight.Levitate) return;
 
         RaycastHit hit;
         Vector3 origin = transform.position;
@@ -113,6 +143,14 @@ public class Box : MonoBehaviour
 
         if (!objectHit.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
         obstacle.SetpOn();
+    }
+    #endregion
+
+    #region Event System
+    private void OnDisable()
+    {
+        if (OnSetpOutTeleportationOverride == null) return;
+        OnSetpOutTeleportationOverride = null;
     }
     #endregion
 }

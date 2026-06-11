@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Pawn : MonoBehaviour
 {
@@ -8,10 +10,9 @@ public class Pawn : MonoBehaviour
 
     [Tooltip("This variable determines the distance between \nthe center of one box and another.")]
     [SerializeField] float distanceCheck;
+    public float DistantCheck => distanceCheck;
 
-
-    #region Base System
-    void Start()
+    void Awake()
     {
         BindEvents();
 
@@ -22,6 +23,7 @@ public class Pawn : MonoBehaviour
         SetpOnNewTile();
     }
 
+    #region Base System
     Box SomethingAhead()
     {
         RaycastHit hit;
@@ -35,49 +37,72 @@ public class Pawn : MonoBehaviour
     #region Movement System
     void Move(E_Direction direction)
     {
-        if (direction == E_Direction.None) return;
+            // 1. Recive input
+        if (direction == E_Direction.Not_Set) return;
 
-        // Rotate 
+            // 2. Rotate 
         switch (direction)
         {
+            case E_Direction.Back:
+                transform.rotation = Quaternion.Euler(0, -90, 0);
+                break;
+            case E_Direction.Forward:
+                transform.rotation = Quaternion.Euler(0, 90, 0);
+                break;
+            case E_Direction.Left:
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
+            case E_Direction.Right:
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                break;
+            /* Old rotation
             case E_Direction.Left:
                 transform.rotation = Quaternion.Euler(0, -90, 0);
                 break;
             case E_Direction.Right:
                 transform.rotation = Quaternion.Euler(0, 90, 0);
                 break;
-            case E_Direction.Up:
+            case E_Direction.Forward:
                 transform.rotation = Quaternion.Euler(0, 0, 0);
                 break;
-            case E_Direction.Down:
+            case E_Direction.Back:
                 transform.rotation = Quaternion.Euler(0, 180, 0);
-                break;
+                break;*/
         }
 
-        bool stepIntoPortal = false;
-
-        // check if there is a  object ahead
+            // 3. Check forward
         Box objectAhead = SomethingAhead();
         // check if it can pass through
         if (objectAhead != null)
-            stepIntoPortal = objectAhead.CanPassThrough(this);
+        {
+            if (objectAhead.HasPassThroughTeleportation(this))
+            {
+                SetpOnNewTile();
+                return;
+            }
+        }
 
-        // check nex tile only if you ar not enter into a portal
-        if (!stepIntoPortal && CheckIfWillFallAfterStepOut()) return;
-
+            // 4. Check tile 
         // if can not step out you will get an error
         if (currentTile == null)
         {
             Debug.LogError("The [Pawn] sand on nothing.");
             return;
         }
+
+        if (currentTile.HasSetpOutTeleportation(this))
+        {
+            SetpOnNewTile();
+            return;
+        }
+
+            // 5. Check next tile
+        // check nex tile only if you ar not enter into a portal
+        if (CheckIfWillFallAfterStepOut()) return;
+
+            // 6. Move
         currentTile.SetpOut(this);
-
-        if (stepIntoPortal) // teleport the pawn
-            objectAhead.SetNewTransformToThePawn(this);
-        else // Move
-            transform.position += transform.forward;
-
+        transform.position += transform.forward;
         SetpOnNewTile();
     }
 
@@ -100,20 +125,22 @@ public class Pawn : MonoBehaviour
         standBox.SetpOn(this);
         currentTile = standBox;
 
-        transform.position = new Vector3Int((int)transform.position.x, (int)transform.position.y, (int)transform.position.z);
+        // repositioning
+        transform.position = Vector3Int.RoundToInt(transform.position);
     }
-    bool CheckIfWillFallAfterStepOut() // << TO DEBUG
+    bool CheckIfWillFallAfterStepOut()
     {
         RaycastHit hit;
-        Vector3 origin = transform.position - transform.up;
+        Vector3 origin = transform.position + transform.forward;
 
         // check if there is a Box
-        if (Physics.Raycast(origin, transform.forward, out hit, distanceCheck)) return false;
+        if (!Physics.Raycast(origin, -transform.up, out hit, distanceCheck)) return true;
 
         // check if the Box hit can be walkable
-        if (!hit.collider.gameObject.TryGetComponent<Box>(out Box objectAhead)) return false;
+        if (!hit.collider.gameObject.TryGetComponent<Box>(out Box objectAhead)) return true;
+        if (objectAhead.walkable) return false;
 
-        return objectAhead.walkable;
+        return true;
     }
     #endregion
 
@@ -143,10 +170,10 @@ public class Pawn : MonoBehaviour
         eatenObject.Eat(this);
     }
 
-    public bool FullStomach()
+    public bool HaveFullStomach()
     {
         if (eatenObject == null) return false;
-        if (eatenObject.weight == E_ObjectWeight.small) return false;
+        if (eatenObject.weight == E_ObjectWeight.Small) return false;
         return true;
     }
     #endregion

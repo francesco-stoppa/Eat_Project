@@ -1,15 +1,15 @@
 public enum E_Direction
 {
-    None,
-    Up,
-    Down,
+    Not_Set,
+    Forward,
+    Back,
     Left,
     Right
 }
 
 public enum E_Commands
 {
-    None,
+    Not_Set,
     Move,
     EatOrSplit,
     ResetLevel
@@ -23,15 +23,24 @@ public enum E_StepStatus
 
 public enum E_ObjectWeight
 {
-    none,
+    Not_Set,
 
     // object
     // light,
-    heavy,
+    Heavy,
 
     // special 
-    small, // not detected by the fatness
-    levitate // bello un oggetto che fa quasi levitare il player così da non essere recepito dal counter delle DeteriorationTile
+    Small, // not detected by the fatness
+    Levitate // bello un oggetto che fa quasi levitare il player così da non essere recepito dal counter delle DeteriorationTile
 }
 
+public enum E_ExitDirection
+{
+    Not_Set,
+    Deadend,
+    Corridor,
+    OneTurn,
+    CorridorAndOneTurn,
+    EveryDirection
+}
 

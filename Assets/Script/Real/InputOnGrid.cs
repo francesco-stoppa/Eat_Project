@@ -43,12 +43,12 @@ public class InputOnGrid : MonoBehaviour
     #region Movement
     void MoveUp()
     {
-        onTakeDirection?.Invoke(E_Direction.Up);
+        onTakeDirection?.Invoke(E_Direction.Forward);
         CommandsMove();
     }
     void MoveDown()
     {
-        onTakeDirection?.Invoke(E_Direction.Down);
+        onTakeDirection?.Invoke(E_Direction.Back);
         CommandsMove();
     }
     void MoveLeft()

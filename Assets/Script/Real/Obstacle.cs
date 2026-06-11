@@ -9,7 +9,7 @@ public class Obstacle : MonoBehaviour
 
     void Awake()
     {
-        if (weight == E_ObjectWeight.none)
+        if (weight == E_ObjectWeight.Not_Set)
             Debug.LogError($"The obstacle: <{gameObject.name}> does not has a [weight].");
     }
 
@@ -17,7 +17,7 @@ public class Obstacle : MonoBehaviour
     private void Update()
     {
         if (gameObject.transform.position.y == 0
-            || weight == E_ObjectWeight.levitate) return;
+            || weight == E_ObjectWeight.Levitate) return;
 
         Fall();
     }
@@ -29,7 +29,7 @@ public class Obstacle : MonoBehaviour
         this.gameObject.SetActive(false);
 
 
-        if(weight == E_ObjectWeight.levitate) return;
+        if(weight == E_ObjectWeight.Levitate) return;
 
         RaycastHit hit;
         Vector3 origin = transform.position;
@@ -52,7 +52,7 @@ public class Obstacle : MonoBehaviour
 
     void Fall()
     {
-        if (weight == E_ObjectWeight.levitate) return;
+        if (weight == E_ObjectWeight.Levitate) return;
 
         RaycastHit hit;
         Vector3 origin = transform.position;

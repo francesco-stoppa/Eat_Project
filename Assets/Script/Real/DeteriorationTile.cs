@@ -1,22 +1,33 @@
 using UnityEngine;
 
-public class DeteriorationTile : Obstacle
+public class DeteriorationTile : Box
 {
     [Tooltip("The tile will destroy on stepping out of it \nbecause i think its better")]
     [SerializeField] int howManyTimeCanWalkOnIt;
     int currentCounter;
 
-    public override void SetpOn(Bob bob)
+
+    #region Base System
+    protected override void BaseChecks()
     {
-        // ...
+        base.BaseChecks();
+
+        if (howManyTimeCanWalkOnIt > 0) return;
+
+        Debug.LogError($"The [Pawn] can not walk on this [{gameObject.name}] tile. \nTile intern counter: <{howManyTimeCanWalkOnIt}>");
+        Destroy(gameObject);
     }
 
-    public override void SetpOut(Bob bob)
+    #endregion
+
+    #region Walkable System
+    public override void SetpOut(Pawn pawn)
     {
-        if (bob == null) return;
+        base.SetpOut(pawn);
 
         currentCounter++;
         if (currentCounter < howManyTimeCanWalkOnIt) return;
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
+    #endregion
 }
