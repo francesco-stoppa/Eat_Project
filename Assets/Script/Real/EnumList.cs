@@ -17,6 +17,7 @@ public enum E_Commands
 
 public enum E_StepStatus
 {
+    Not_Set,
     OnStepOn,
     OnStepOut
 }

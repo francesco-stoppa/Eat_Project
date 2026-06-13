@@ -19,8 +19,8 @@ public class Tunnel : Walls
 
         if (transform.forward != go.transform.forward) return false; // << ADD
 
-        RaycastHit hit;
-        Vector3 origin = go.transform.position;
+        /*RaycastHit hit;
+        Vector3 origin = go.transform.position;*/
 
         go.transform.position = exit.gameObject.transform.position - exit.gameObject.transform.forward;
         // go.transform.rotation = exit.gameObject.transform.rotation;

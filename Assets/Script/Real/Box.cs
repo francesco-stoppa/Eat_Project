@@ -20,9 +20,18 @@ public class Box : MonoBehaviour
     }
 
     #region Base System
-    protected void Repositioning()
+    protected virtual void Repositioning(bool callAfterFreeFall = false)
     {
         transform.position = Vector3Int.RoundToInt(transform.position);
+
+        if (weight == E_ObjectWeight.Levitate || callAfterFreeFall) return;
+
+        RaycastHit hit;
+        Vector3 origin = transform.position;
+
+        if (!Physics.Raycast(origin, Vector3.down, out hit, 1)) return;
+        if (!hit.collider.gameObject.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
+        obstacle.SetpOn();
     }
     protected virtual void BaseChecks()
     {
@@ -34,7 +43,8 @@ public class Box : MonoBehaviour
     {
         if (pawn == null)
         {
-            Debug.LogError("[Pawn] not detected.");
+            // vv TEMP vv
+            // Debug.LogError("[Pawn] not detected.");
             return false;
         }
         return true;
@@ -59,15 +69,15 @@ public class Box : MonoBehaviour
         if (!Physics.Raycast(origin, Vector3.down, out hit, 1)) return;
         GameObject objectHit = hit.collider.gameObject;
 
-        if (!objectHit.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
-        obstacle.SetpOut();
+        if (!objectHit.TryGetComponent<Box>(out Box box)) return;
+        box.SetpOut(null);
     }
 
     public virtual void Split(Vector3 newPosition)
     {
         gameObject.transform.position = newPosition;
         FreeFall();
-        Repositioning();
+        Repositioning(true);
         gameObject.SetActive(true);
     }
     #endregion
@@ -121,6 +131,7 @@ public class Box : MonoBehaviour
             || weight == E_ObjectWeight.Levitate) return;
 
         FreeFall();
+        Repositioning(true);
     }
     #endregion
 
@@ -134,15 +145,14 @@ public class Box : MonoBehaviour
         Vector3 newPosition = new Vector3(origin.x, 0, origin.z);
         this.transform.position = newPosition;
 
-
-        if (!Physics.Raycast(origin, Vector3.down, out hit, origin.y)) return;
+        if (!Physics.Raycast(origin, Vector3.down, out hit, 10.0f)) return;
         GameObject objectHit = hit.collider.gameObject;
 
         newPosition += transform.up * objectHit.transform.position.y + transform.up;
         this.transform.position = newPosition;
 
-        if (!objectHit.TryGetComponent<Obstacle>(out Obstacle obstacle)) return;
-        obstacle.SetpOn();
+        if (!objectHit.TryGetComponent<Box>(out Box box)) return;
+        box.SetpOn(null);
     }
     #endregion
 
