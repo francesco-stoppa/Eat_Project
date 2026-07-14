@@ -45,3 +45,27 @@ public enum E_ExitDirection
     EveryDirection
 }
 
+public enum E_Box
+{
+    Not_Set,
+    Tile,
+    DeteriorationTile,
+    PressureTile,
+    Portal,
+    Stair,
+    Wall,
+    Corridor,
+    CaveCorridor,
+    CaveTurn,
+    CaveDeadend
+}
+
+public enum E_Lv_Base
+{
+    Not_Set,
+    Empty,
+    Tile,
+    DeteriorationTile,
+    PressureTile // can't place because i need to bind the object to hide on pressed
+}
+

@@ -13,7 +13,7 @@ public class Pawn : MonoBehaviour
     [Header("Art (temp)")]
     [SerializeField] GameObject body;
 
-    void Awake()
+    void Start() // i use start beacuse on the awake i place the level
     {
         BindEvents();
 

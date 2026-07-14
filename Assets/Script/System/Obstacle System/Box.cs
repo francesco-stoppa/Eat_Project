@@ -12,6 +12,9 @@ public class Box : MonoBehaviour
 
     public Func<Pawn, bool> OnSetpOutTeleportationOverride;
 
+    // public int id;
+
+
     void Awake()
     {
         Repositioning();
