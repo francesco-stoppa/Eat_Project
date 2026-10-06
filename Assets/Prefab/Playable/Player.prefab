@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4925193655804763758}
   - component: {fileID: 8232505366637601900}
+  - component: {fileID: 6025956560215832009}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -78,6 +79,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 544b8fd7e635d2e458bc66536af1dff5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swipe: {fileID: 6025956560215832009}
+--- !u!114 &6025956560215832009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5003532164031478877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe272c7b1f77e8409f088ff054efb3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minSwipeDistance: 50
+  holdDuration: 0.9
 --- !u!1 &6409757701124536404
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,6 +153,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

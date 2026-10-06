@@ -37,10 +37,17 @@ public class Player : MonoBehaviour
     Int32 restart = 0;
     Int32 currentLv = 0;
     Int32 world;
+    
+    // Add gesture phone
+    public SwipeGesture swipe;
 
 
     private void Awake()
     {
+        if(swipe == null)
+            swipe = GetComponent<SwipeGesture>();
+
+        /*
         // Input Map
         input = new Controls();
         // Player direction
@@ -51,7 +58,17 @@ public class Player : MonoBehaviour
         // Eat
         input.PlayerAction.EatSplit.started += context => Eat();
         // Reset level
-        input.PlayerAction.Reset.started += context => Reset();
+        input.PlayerAction.Reset.started += context => Reset();*/
+        
+        // Phone - Swipe
+        swipe.OnSwipeUp += MoveUp;
+        swipe.OnSwipeDown += MoveDown;
+        swipe.OnSwipeLeft += MoveLeft;
+        swipe.OnSwipeRight += MoveRight;
+        
+        swipe.OnTap += Eat;
+        swipe.OnHold += Reset;
+
     }
 
     private void Quit()
@@ -64,9 +81,20 @@ public class Player : MonoBehaviour
     {
         // Singelton
         gameManager = GameManager.Instance;
-        saveSystem = SaveSystem.Instance;
+        saveSystem = SaveSystem.Instance; 
+        // vv
+        Debug.Log($"GameManager: {gameManager}");
+        Debug.Log($"SaveSystem: {saveSystem}");
+
         world = saveSystem.GetWorld();
         currentLv = saveSystem.GetLevel();
+
+        Debug.Log($"World: {world}");
+        Debug.Log($"Current Level: {currentLv}");
+        // ^^
+        
+        // world = saveSystem.GetWorld();
+        // currentLv = saveSystem.GetLevel();
         // Win condition
         winPos = gameManager.GetWinColumns().gameObject;
         // Limit
@@ -288,6 +316,7 @@ public class Player : MonoBehaviour
     }
     #endregion
     #region InputMap
+    /*
     private void OnEnable()
     {
         input.Enable();
@@ -295,6 +324,6 @@ public class Player : MonoBehaviour
     private void OnDisable()
     {
         input.Disable();
-    }
+    }*/
     #endregion
 }
