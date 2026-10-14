@@ -238,7 +238,7 @@ public class Player : MonoBehaviour
                 // qui salva
                 saveSystem.LvComplete(world);
                 saveSystem.SetLevel(1);
-                SceneManager.LoadScene(1); // mani menu
+                SceneManager.LoadScene(0); // mani menu
             }
             else
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
