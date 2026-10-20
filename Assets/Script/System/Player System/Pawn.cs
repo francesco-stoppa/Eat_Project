@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Pawn : MonoBehaviour
 {
@@ -13,6 +14,11 @@ public class Pawn : MonoBehaviour
     [Header("Art (temp)")]
     [SerializeField] GameObject body;
 
+    // Add Block Input for slow down the game
+    bool blockInput;
+    float freezeMove;
+    MoveTimeTest _moveTimeTest;
+
     void Start() // i use start beacuse on the awake i place the level
     {
         BindEvents();
@@ -22,6 +28,18 @@ public class Pawn : MonoBehaviour
                 $"\nCurrent value: <{distanceCheck}>.");
 
         SetpOnNewTile();
+
+
+        // check movement speed
+        blockInput = true;
+
+        _moveTimeTest = MoveTimeTest.Instance;
+        if (_moveTimeTest == null)
+        {
+            Debug.LogError("The [MoveTimeTest] is missing.");
+            return;
+        }
+        freezeMove = _moveTimeTest.value;
     }
 
     #region Base System
@@ -38,6 +56,9 @@ public class Pawn : MonoBehaviour
     #region Movement System
     void Move(E_Direction direction)
     {
+        // 0. check if i can recive input
+        if (!blockInput) return;
+
         // 1. Recive input
         if (direction == E_Direction.Not_Set) return;
 
@@ -78,9 +99,15 @@ public class Pawn : MonoBehaviour
         {
             if (objectAhead.HasPassThroughTeleportation(this))
             {
+                // aniamtion for passing in a portal
                 SetpOnNewTile();
                 return;
             }
+        }
+        else
+        {
+            // test per 
+            blockInput = true;
         }
 
         // 4. Check tile 
@@ -105,6 +132,20 @@ public class Pawn : MonoBehaviour
         currentTile.StepOut(this);
         transform.position += transform.forward;
         SetpOnNewTile();
+
+        // 7. Movement unlock
+        // avvia qui la cooroutine
+        StartCoroutine(WaitCoroutine());
+
+    }
+
+    IEnumerator WaitCoroutine()
+    {
+        // Attendi freezeMove -> aniamtion time
+        yield return new WaitForSeconds(freezeMove);
+
+        // now it can move
+        blockInput = true;
     }
 
     void SetpOnNewTile()

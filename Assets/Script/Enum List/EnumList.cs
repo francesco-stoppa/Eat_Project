@@ -69,3 +69,4 @@ public enum E_Lv_Base
     PressureTile // can't place because i need to bind the object to hide on pressed
 }
 
+
