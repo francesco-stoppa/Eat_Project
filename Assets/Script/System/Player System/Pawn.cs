@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+using UnityEditor;
+
 public class Pawn : MonoBehaviour
 {
     InputOnGrid _input;
@@ -31,7 +33,7 @@ public class Pawn : MonoBehaviour
 
 
         // check movement speed
-        blockInput = true;
+        blockInput = false;
 
         _moveTimeTest = MoveTimeTest.Instance;
         if (_moveTimeTest == null)
@@ -57,7 +59,7 @@ public class Pawn : MonoBehaviour
     void Move(E_Direction direction)
     {
         // 0. check if i can recive input
-        if (!blockInput) return;
+        if (blockInput) return;
 
         // 1. Recive input
         if (direction == E_Direction.Not_Set) return;
@@ -106,8 +108,8 @@ public class Pawn : MonoBehaviour
         }
         else
         {
-            // test per 
-            blockInput = true;
+            // test per ?
+            // blockInput = false;
         }
 
         // 4. Check tile 
@@ -135,17 +137,7 @@ public class Pawn : MonoBehaviour
 
         // 7. Movement unlock
         // avvia qui la cooroutine
-        StartCoroutine(WaitCoroutine());
-
-    }
-
-    IEnumerator WaitCoroutine()
-    {
-        // Attendi freezeMove -> aniamtion time
-        yield return new WaitForSeconds(freezeMove);
-
-        // now it can move
-        blockInput = true;
+        StartCoroutine(WaitAfterMoveingCoroutine());
     }
 
     void SetpOnNewTile()
@@ -191,6 +183,9 @@ public class Pawn : MonoBehaviour
     #region Stomach System
     void SplitAndEat(E_Commands commandRecive)
     {
+        // Add check if i can recive input
+        if (blockInput) return;
+
         if (commandRecive != E_Commands.EatOrSplit) return;
         Box objectAhead;
 
@@ -217,6 +212,11 @@ public class Pawn : MonoBehaviour
         // vv
         ChangeDimention(); // <<
         // ^^
+
+        blockInput = true;
+        // 7. Movement unlock
+        // avvia qui la cooroutine
+        StartCoroutine(WaitAfterMoveingCoroutine());
     }
 
     public bool HaveFullStomach()
@@ -227,6 +227,74 @@ public class Pawn : MonoBehaviour
     }
     #endregion
 
+    #region Block Input System
+    IEnumerator WaitAfterMoveingCoroutine()
+    {
+        // Attendi freezeMove -> aniamtion time
+        yield return new WaitForSeconds(freezeMove);
+
+        // now it can move
+        blockInput = false;
+    }
+    #endregion
+
+    #region Testing System
+    public void Split()
+    {
+        eatenObject = null;
+        ChangeDimention(); 
+    }
+    public void Eat(bool isTile)
+    {
+        string prefabName = "Tile";
+        if (!isTile)
+            prefabName = "Stair";
+        GameObject prefab = SpawnPrefab(prefabName);
+        if (prefab == null)
+        {
+            Debug.LogError("The [Pawn] force to eat nothing.");
+            return;
+        }
+        prefab.SetActive(false);
+        
+        eatenObject = prefab.GetComponent<Box>();
+        if (eatenObject == null)
+        {
+            Debug.LogError("The [Pawn] stomach is empty.");
+            return;
+        }
+        
+        eatenObject.Eat(this);
+
+        ChangeDimention(); 
+    }
+    
+    public GameObject SpawnPrefab(string prefabName)
+    {
+        string[] guids = AssetDatabase.FindAssets(
+            prefabName + " t:Prefab",
+            new[] { "Assets/Art/Prefab" }
+        );
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            string assetName = System.IO.Path.GetFileNameWithoutExtension(path);
+
+            if (assetName == prefabName)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+
+                if (prefab != null)
+                    return Instantiate(prefab);
+            }
+        }
+
+        Debug.LogError("Prefab non trovato: " + prefabName);
+        return null;  
+    }
+    #endregion
+    
     #region Event System
     private void BindEvents()
     {

@@ -32,7 +32,7 @@ public enum E_ObjectWeight
 
     // special 
     Small, // not detected by the fatness
-    Levitate // bello un oggetto che fa quasi levitare il player così da non essere recepito dal counter delle DeteriorationTile
+    Levitate // bello un oggetto che fa quasi levitare il player cosï¿½ da non essere recepito dal counter delle DeteriorationTile
 }
 
 public enum E_ExitDirection
@@ -43,21 +43,6 @@ public enum E_ExitDirection
     OneTurn,
     CorridorAndOneTurn,
     EveryDirection
-}
-
-public enum E_Box
-{
-    Not_Set,
-    Tile,
-    DeteriorationTile,
-    PressureTile,
-    Portal,
-    Stair,
-    Wall,
-    Corridor,
-    CaveCorridor,
-    CaveTurn,
-    CaveDeadend
 }
 
 public enum E_Lv_Base
