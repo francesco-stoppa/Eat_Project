@@ -104,6 +104,7 @@ public class Pawn : MonoBehaviour
             {
                 // aniamtion for passing in a portal
                 SetpOnNewTile();
+                StartCoroutine(WaitAfterMoveingCoroutine());
                 return;
             }
         }
@@ -118,12 +119,14 @@ public class Pawn : MonoBehaviour
         if (currentTile == null)
         {
             Debug.LogError("The [Pawn] sand on nothing.");
+            StartCoroutine(WaitAfterMoveingCoroutine());
             return;
         }
 
         if (currentTile.HasSetpOutTeleportation(this))
         {
             SetpOnNewTile();
+            StartCoroutine(WaitAfterMoveingCoroutine());
             return;
         }
 
