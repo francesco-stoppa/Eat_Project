@@ -60,7 +60,8 @@ public class Pawn : MonoBehaviour
     {
         // 0. check if i can recive input
         if (blockInput) return;
-
+        blockInput = true;
+        
         // 1. Recive input
         if (direction == E_Direction.Not_Set) return;
 
@@ -128,7 +129,11 @@ public class Pawn : MonoBehaviour
 
         // 5. Check next tile
         // check nex tile only if you ar not enter into a portal
-        if (CheckIfWillFallAfterStepOut()) return;
+        if (CheckIfWillFallAfterStepOut())
+        {
+            StartCoroutine(WaitAfterMoveingCoroutine());
+            return;
+        }
 
         // 6. Move
         currentTile.StepOut(this);
